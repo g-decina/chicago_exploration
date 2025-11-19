@@ -1,0 +1,31 @@
+services:
+  # Backend API
+  backend:
+    build: .
+    container_name: chicago_backend
+    command: ./scripts/start_backend.sh 
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DATA_DIR=/code/data/processed
+      - RAW_DATA=/code/data/raw/active_licences.geojson
+
+  # Service 2: The Frontend UI
+  frontend:
+    build: .
+    container_name: chicago_frontend
+    command: streamlit run frontend/Home.py --server.port 8501 --server.address 0.0.0.0
+    volumes:
+      - .:/code
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend

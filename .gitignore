@@ -1,0 +1,5 @@
+/data/raw/
+/data/downloader.py
+/scripts
+__pycache__
+*.pyc
