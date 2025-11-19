@@ -4,7 +4,7 @@
 > 
 > (...)
 > 
-> Chicago, Illinois, United States, *see Community areas in Chicago*
+> * **Chicago, Illinois, United States**, *see Community areas in Chicago*
 > 
 > (...)
 > 
