@@ -1,9 +1,13 @@
 # Chicago Exploration Tool
 
 > City of neighbourhoods or City of neighborhoods is a commonly applied nickname for many cities, and may refer to:
+> 
 > (...)
+> 
 > Chicago, Illinois, United States, *see Community areas in Chicago*
+> 
 > (...)
+> 
 > *From Wikipedia*
 
 Does the data agree?
@@ -12,7 +16,7 @@ Does the data agree?
 
 The City of Chicago's business licence dataset ([link](https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses-Current-Active-Map/e4sp-itvq)) contains 2,404 unique activity codes and labels. These codes are manually entered and are, quite often, inconsistent. Here's an example:
 
-* "Fitness Training On and Off Premises", "Fitness Classes", "Operation of a Health Club" are three different labels.;
+* "Fitness Training On and Off Premises", "Fitness Classes", "Operation of a Health Club" are three different labels;
 * There is a plethora of labels tied to personal care and beauty: "Hair Services", "Hair, Nail and Skin Care Services", "Nail Services", "Prove Waxing Services", etc. Many companies fall in several of these categories! Without knowing how their turnover is split between each category of services, we could well just brand them as "Personal Care". 
 
 # The Solution
