@@ -3,7 +3,7 @@ import re
 import requests
 import streamlit as st
 
-from streamlit_folium import st_folium
+from streamlit_folium import folium_static
 from folium.plugins import FastMarkerCluster
 
 from utils.utils import *
@@ -46,14 +46,21 @@ with st.sidebar:
         help='Select the activity codes to display.'
     )
     
-    marker_size = st.slider('Dot size', 2.0, 10.0, 4.0, step=0.5)
+    marker_size = st.slider('Dot size', 1.0, 10.0, 2.0, step=0.5)
     
     st.markdown('---')
     st.subheader('Clustering')
-    enable_clustering = st.checkbox('Activate clustering (HDBSCAN)', value=False)
-    miles = st.slider('Max. distance (miles)', 0.1, 5.0, 1.0, step=0.05, disabled=not enable_clustering)
-    eps = 0.00025259 * miles
-    min_samples = st.slider('Min. samples per cluster', 1, 20, 5, disabled=not enable_clustering)
+    enable_clustering = st.checkbox('Activate clustering', value=False)
+    miles = st.slider(
+        'Cluster Merging Distance (miles)', 
+        min_value = 0.0, 
+        max_value = 1.0,
+        value = 0.0, 
+        step = 0.05, 
+        disabled = not enable_clustering,
+        help = 'Distance threshold to merge clusters: clusters that have a gap closer than the specified distance between them will be merged together. \n\nSet to 0 for pure density-based clustering.')
+    eps = 1609.34 * miles # Distances are calculated in meters; see app/utils/clustering.py
+    min_samples = st.slider('Min. businesses per cluster', 1, 50, 10, disabled=not enable_clustering)
     
     st.markdown('---')
     generate = st.sidebar.button('Generate map', on_click=trigger_map)
@@ -92,51 +99,97 @@ if st.session_state.get('trigger', False):
         if enable_clustering:
             cluster_colors = get_cluster_colormap(geojson_data)
             
-            for feature in geojson_data['features']:
-                if not feature.get('geometry'):
-                    continue
+            noise_features = [f for f in geojson_data['features']
+                            if f.get('properties', {}).get('cluster') == -1]
+            clustered_features = [f for f in geojson_data['features']
+                            if f.get('properties', {}).get('cluster') != -1]
+            
+            if noise_features:
+                folium.GeoJson(
+                    {'type': 'FeatureCollection', 'features': noise_features},
+                    name='Noise Points',
+                    marker=folium.Circle(
+                        radius=marker_size * 0.5, color='#888888', fill_opacity=0.7
+                    ),
+                    tooltip=folium.GeoJsonTooltip(
+                        fields=['doing_business_as_name', 'cluster'],
+                        aliases=['Business Name:', 'Cluster:']
+                    ),
+                    zoom_on_click=True
+                ).add_to(m)
+            
+            
+            cluster_groups = {}
+            for f in clustered_features:
+                cid = f['properties']['cluster']
+                coords = f['geometry']['coordinates']
+                if cid not in cluster_groups: 
+                    cluster_groups[cid] = []
+                cluster_groups[cid].append(coords)
+            
+            hull_features = []
+            for cid, points in cluster_groups.items():
+                if len(points) < 3: continue
                 
-                coords=feature['geometry']['coordinates']
-                name=feature['properties']['doing_business_as_name']
-                cluster_id=feature.get('properties', {}).get('cluster', 'N/A')
+                hull = MultiPoint(points).convex_hull
                 
-                if cluster_id == -1:
-                    cluster_name = 'Noise'
-                    radius = marker_size * 0.5
-                    opacity = 0.5
-                else:
-                    cluster_name = f'Cluster {cluster_id}'
-                    radius = marker_size
-                    opacity = 0.8
-                
-                color = cluster_colors.get(cluster_id, '#FFFFFF')
-                
-                tooltip_text=f'{name} — {cluster_name}'
-                
-                folium.CircleMarker(
-                    location=[coords[1], coords[0]],
-                    radius=marker_size,
-                    color=color,
-                    fill=True,
-                    fill_opacity=opacity,
-                    weight=1,
-                    tooltip=tooltip_text
+                if hull.geom_type == 'Polygon':
+                    exterior_coords = [[p[0], p[1]] for p in hull.exterior.coords]
+                    
+                    hull_features.append({
+                        'type': 'Feature',
+                        'geometry': {
+                            'type': 'Polygon',
+                            'coordinates': [exterior_coords]
+                        },
+                        'properties': {'cluster': cid, 'tooltip': f'Cluster {cid} Territory'}
+                    })
+
+            if hull_features:
+                folium.GeoJson(
+                    {'type': 'FeatureCollection', 'features': hull_features},
+                    name='Cluster Territories',
+                    style_function=lambda x: {
+                        'fillColor': cluster_colors.get(x['properties']['cluster'], '#3388ff'),
+                        'color': cluster_colors.get(x['properties']['cluster'], '#3388ff'),
+                        'weight': 2,
+                        'fillOpacity': 0.1
+                    },
+                    tooltip=folium.GeoJsonTooltip(fields=['tooltip'], labels=False)
+                ).add_to(m)
+            
+            if clustered_features:
+                folium.GeoJson(
+                    {'type': 'FeatureCollection', 'features': clustered_features},
+                    name='Clustered Points',
+                    marker=folium.CircleMarker(
+                        radius=marker_size,
+                    ),
+                    tooltip=folium.GeoJsonTooltip(
+                        fields=['doing_business_as_name', 'cluster'],
+                        aliases=['Business Name:', 'Cluster:']
+                    ),
+                    style_function=lambda x: {
+                        'fillColor': cluster_colors.get(x['properties']['cluster'], '#000000'),
+                        'color': cluster_colors.get(x['properties']['cluster'], '#000000'),
+                        'fillOpacity': 0.8,
+                    },
+                    zoom_on_click=True
                 ).add_to(m)
                 
         else:
-            for feature in geojson_data['features']:
-                if not feature.get('geometry'):
-                    continue
-                
-                coords = feature['geometry']['coordinates']
-                tooltip_text = feature['properties']['doing_business_as_name']
-            
-                folium.CircleMarker(
-                    location=[coords[1], coords[0]], 
-                    radius=marker_size,
-                    color='#3676E3',
-                    tooltip=tooltip_text
-                ).add_to(m)
+            folium.GeoJson(
+                geojson_data,
+                name='Registered Businesses',
+                marker=folium.CircleMarker(
+                    radius=marker_size, color='#3676E3', fill_opacity=0.7
+                ),
+                tooltip=folium.GeoJsonTooltip(
+                    fields=['doing_business_as_name'],
+                    aliases=['Business Name:']
+                ),
+                zoom_on_click=True
+            ).add_to(m)
         
         folium.LayerControl().add_to(m)
         
@@ -144,12 +197,13 @@ if st.session_state.get('trigger', False):
     
     st.session_state['trigger'] = False
 
+
 if st.session_state['map']:
     with map_placeholder.container():
-        st_folium(
-            st.session_state['map'], 
-            use_container_width=True,
-            key='folium_map_final'
+        folium_static(
+            st.session_state['map'],
+            width=1400,
+            height=700
         )
 else:
     st.info('Click \'Generate map\' in the sidebar to get started.')
