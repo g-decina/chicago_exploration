@@ -12,6 +12,8 @@
 
 Does the data agree?
 
+![Screenshot of the application.](demo_screenshot.png)
+
 # The Challenge: Messy Data
 
 The City of Chicago's business licence dataset ([link](https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses-Current-Active-Map/e4sp-itvq)) contains 2,404 unique activity codes and labels. These codes are manually entered and are, quite often, inconsistent. Here's an example:
