@@ -71,6 +71,6 @@ A lot of extra features can be added in the future:
 
 # About the Author
 
-**Guillaume Decina** | Data Scientist | ML, Geospatial & Forecasting Specialist
+**Guillaume Decina** | Data Scientist & ML Engineer | Geospatial & Forecasting Specialist
 
 [Find me on LinkedIn](https://www.linkedin.com/in/guillaume-d-8648261b1)
