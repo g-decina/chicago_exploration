@@ -1,4 +1,4 @@
-# Chicago Exploration Tool
+# Chicago Business Density Explorer
 
 > City of neighbourhoods or City of neighborhoods is a commonly applied nickname for many cities, and may refer to:
 > 
