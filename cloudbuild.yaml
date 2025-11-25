@@ -38,7 +38,8 @@ steps:
         - 'deploy'
         - 'chicago-backend'
         - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
-        - '--args=-c,uvicorn app.main:app --host 0.0.0.0 --port 8000'
+        - '--command=python'
+        - '--args=-m,uvicorn,app.main:app,--host,0.0.0.0,--port,8000'
         - '--region=$_REGION'
         - '--port=8000'
         - '--env-vars-file=env.yaml'
@@ -52,11 +53,11 @@ steps:
         - 'chicago-frontend'
         - '--service-account=chicago-frontend-sa@$PROJECT_ID.iam.gserviceaccount.com'
         - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
-        - '--args=-c,streamlit run app/Home.py --server.port=8501 --server.address=0.0.0.0'
+        - '--command=python'
+        - '--args=-m,streamlit,run,app/Home.py,--server.port=8501,--server.address=0.0.0.0'
         - '--region=$_REGION'
         - '--port=8501'
         - '--env-vars-file=env.yaml'
-
 substitutions:
   _REGION: us-central1
   
