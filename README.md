@@ -10,9 +10,7 @@
 > 
 > *From Wikipedia*
 
-Does the data agree?
-
-![Screenshot of the application.](demo_screenshot.png)
+**Does the data agree?**
 
 # The Challenge: Messy Data
 
