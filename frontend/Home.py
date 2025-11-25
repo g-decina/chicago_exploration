@@ -109,8 +109,8 @@ if st.session_state.get('trigger', False):
             st.rerun()
         
         geojson_data = get_geojson(
-            selected_code=selected_code,
-            enable_clustering=enable_clustering,
+            act_codes=selected_code,
+            clustering=enable_clustering,
             eps=eps,
             min_samples=min_samples
         )

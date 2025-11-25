@@ -16,6 +16,10 @@ from utils.config import *
 
 logger = logging.getLogger('gunicorn.error')
 
+# -----------------------
+# TOKEN WRAPPER
+# -----------------------
+
 def get_id_token(url):
     try:
         auth_req = google.auth.transport.requests.Request()
@@ -24,8 +28,11 @@ def get_id_token(url):
         logger.warning(f"Could not fetch ID token: {e}")
         return None
 
-# --- Caching Function ---
-@st.cache_data(ttl=5, show_spinner='Fetching data from API...')
+# -----------------------
+# CACHING FUNCTION
+# -----------------------
+
+@st.cache_data(ttl=5)
 def get_api_data(
     endpoint,
     params=None
@@ -56,6 +63,10 @@ def get_api_data(
         st.error(f'Error API fetching {endpoint}: {e}')
         return None
 
+# -----------------------
+# MAIN GET FUNCTIONS
+# -----------------------
+
 @st.cache_data
 def get_activity_codes():
     response = get_api_data('codes')
@@ -65,6 +76,7 @@ def get_activity_codes():
         st.error('Failed to load activity codes.')
         return {}
 
+@st.cache_data
 def get_geojson(
     act_codes, clustering=False, eps=0.02, min_samples=5
 ):
@@ -87,6 +99,10 @@ def get_geojson(
         st.error(f'Backend error({response.status_code}): {response.text}')
         return None
     
+# -----------------------
+# OBSOLETE
+# -----------------------
+
 def fetch_csv(naf_codes):
     try:
         r = requests.get(f'{BACKEND_URL}/data', params={'naf_codes': naf_codes})
