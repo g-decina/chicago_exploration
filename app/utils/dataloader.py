@@ -17,7 +17,7 @@ def load_data() -> gpd.GeoDataFrame:
     
     file_to_load = list(data_path.glob('*.parquet'))
     if len(file_to_load) > 1:
-        logger.critical(f'CRITICAL: More than one master file found in {DATA_DIR}.')
+        logger.critical(f'More than one master file found in {DATA_DIR}.')
     else:
         master_path = Path(file_to_load[0])
     

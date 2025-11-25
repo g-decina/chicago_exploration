@@ -24,4 +24,4 @@ COPY . .
 ENV PYTHONPATH=/code
 RUN chmod +x scripts/*.sh
 
-CMD ["./scripts/start_backend.sh"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
