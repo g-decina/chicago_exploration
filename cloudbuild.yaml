@@ -43,6 +43,7 @@ steps:
         - '--region=$_REGION'
         - '--port=8000'
         - '--env-vars-file=env.yaml'
+        - '--timeout=300'
     
     # 6. Deploy frontend
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -54,10 +55,11 @@ steps:
         - '--service-account=chicago-frontend-sa@$PROJECT_ID.iam.gserviceaccount.com'
         - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
         - '--command=python'
-        - '--args=-m,streamlit,run,app/Home.py,--server.port=8501,--server.address=0.0.0.0'
+        - '--args=-m,streamlit,run,app/Home.py,--server.port=8501,--server.address=0.0.0.0,--server.headless=true,--server.fileWatcherType=none'
         - '--region=$_REGION'
         - '--port=8501'
         - '--env-vars-file=env.yaml'
+        - '--timeout=300'
 substitutions:
   _REGION: us-central1
   
