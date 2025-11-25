@@ -46,7 +46,7 @@ def get_api_data(
             timeout=TIMEOUT
         )
         r.raise_for_status()
-        return r.json()
+        return r
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 403:
             st.error('Access Denied (403).')
