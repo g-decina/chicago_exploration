@@ -1,4 +1,7 @@
 steps:
+# ----------------
+# CI
+# ----------------
     # 1. Build the Docker image
     - name: 'gcr.io/cloud-builders/docker'
       args: [
@@ -22,6 +25,10 @@ steps:
     # 4. Push the 'latest' image to Artifact Reg
     - name: 'gcr.io/cloud-builders/docker'
       args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:latest']
+
+# ----------------
+# CD
+# ----------------
 
     # 5. Deploy backend
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -47,6 +54,7 @@ steps:
         - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
         - '--command=./scripts/start_frontend.sh'
         - '--region=$_REGION'
+        - '--port=8501'
         - '--env-vars-file=env.yaml'
 
 substitutions:
