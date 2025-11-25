@@ -71,7 +71,7 @@ def get_processed_clusters(
 
 @router.get('/codes')
 def get_codes():
-    return list_codes()
+    return list_codes(MASTER_GDF)
 
 @router.get('/geojson')
 def get_geojson(
