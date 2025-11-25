@@ -1,5 +1,9 @@
+.git
+.gitignore
+__pycache__/
+*.pyc
+.env
+venv/
 /data/raw/
 /data/downloader.py
-/scripts
-__pycache__
-*.pyc
+/misc

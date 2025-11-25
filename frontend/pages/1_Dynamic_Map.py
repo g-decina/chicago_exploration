@@ -39,10 +39,9 @@ with st.sidebar:
     activity_list = fetch_activity_codes()
     activity_labels = list(activity_list)
     
-    selected_codes=st.multiselect(
+    selected_codes=st.selectbox(
         'Activity Codes',
         options=activity_labels,
-        default=[],
         help='Select the activity codes to display.'
     )
     

@@ -2,6 +2,7 @@ import geopandas as gpd
 import pandas as pd
 import typer
 import re
+import shutil
 
 from termcolor import colored
 from sklearn.cluster import AgglomerativeClustering
@@ -39,7 +40,7 @@ def main(
     print(colored(f'Processing raw GeoJSON file: {input_file}', 'blue', attrs=['bold']))
     df = gpd.read_file(input_file)
     
-    clean_df = df.loc[:, [ACT_COL, NAME_COL, DESC_COL, 'geometry']].copy()
+    clean_df = df.loc[:, [ACT_COL, NAME_COL, 'geometry']].copy()
     
     # --- 2. NLP Clustering ---
     
@@ -80,24 +81,24 @@ def main(
     
     clean_df['clean_activity'] = clean_df[DESC_COL].map(cluster_map)
     
-    # --- 3. Saving Consolidated Files ---
+    # --- 3. Saving Consolidated GDF ---
     unique_clean_labels = clean_df['clean_activity'].unique()
     
     print(f'Total records: {len(clean_df):,d}.')
-    print(f'Reduced {len(unique_activities)} raw categories -> {len(unique_clean_labels)} semantic clusters substitued.')
-    print(f'Saving partitions to {output_dir}...')
+    print(f'Reduced {len(unique_activities):,d} raw categories -> {len(unique_clean_labels):,d} semantic clusters substitued.')
+    print(f'Saving master file to {output_dir}...')
     
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    if output_dir.exists():
+        try:
+            shutil.rmtree('data/legacy')
+        except:
+            pass
+        shutil.move(output_dir, 'data/legacy')
+    output_dir.mkdir(parents=True, exist_ok=True)
     
     # Processing records by activity code
-    for label in unique_clean_labels:
-        if pd.isna(label) or label == '':
-            continue
-        subset_df = clean_df[clean_df['clean_activity'] == label]
-        safe_name = sanitize_filename(str(label))
-        output_path = DATA_DIR / f'{safe_name}.parquet'
-            
-        gpd.GeoDataFrame(subset_df).to_parquet(output_path)
+    output_path = DATA_DIR / 'chicago_licenses_master.parquet'
+    gpd.GeoDataFrame(clean_df).to_parquet(output_path)
     
     # --- 4. Creating the Index File ---
     index_df = pd.DataFrame({

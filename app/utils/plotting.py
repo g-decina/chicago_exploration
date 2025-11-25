@@ -13,18 +13,6 @@ def plot_geodata(
     marker_size: int=2.0
 ) -> gpd.GeoDataFrame:
     fig, ax = plt.subplots(figsize=(12, 12))
-    overlay.get('city', gpd.GeoDataFrame).plot(
-        ax=ax, color=BACKGROUND_COLOR, edgecolor=EDGE_COLOR, linewidth=2.0
-    )
-    
-    if 'neighborhoods' in overlay:
-        overlay.get('neighborhoods').plot(
-        ax=ax, color=BACKGROUND_COLOR, edgecolor=EDGE_COLOR, linewidth=1.3
-    )
-    if 'community_areas' in overlay:
-        overlay.get('community_areas').plot(
-        ax=ax, color=BACKGROUND_COLOR, edgecolor=EDGE_COLOR, linewidth=0.7
-    )
         
     if 'cluster' in gdf.columns:
         clustered=gdf[gdf['cluster'] != -1]

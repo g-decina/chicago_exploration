@@ -22,7 +22,8 @@ RAW_COMPANY_DATA = Path(str(os.getenv('RAW_COMPANY_DATA')))
 COMPANY_DATA = Path(str(os.getenv('PROCESSED_COMPANY_DATA')))
 
 # Key columns
-ACT_COL = os.getenv('ACT', 'business_activity_id')
+ACT_CLEAN = os.getenv('ACT', '')
+ACT_COL = os.getenv('ACT_COL', '')
 NAME_COL = os.getenv('NAME', 'doing_business_as_name')
 DESC_COL = os.getenv('DESC', 'business_activity')
 

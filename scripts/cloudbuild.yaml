@@ -1,0 +1,62 @@
+steps:
+  # ---------------------------------------------------------
+  # 2 - Build the Docker Image
+  # ---------------------------------------------------------
+  # Tagging with $COMMIT_SHA allows for easy versioning
+  - name: 'gcr.io/cloud-builders/docker' # Official Docker builder
+    args: 
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
+      - '.'
+
+  # ---------------------------------------------------------
+  # 2 - Push Image to Artifact Registry
+  # ---------------------------------------------------------
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
+
+  # ---------------------------------------------------------
+  # 3 - Backend Deployment
+  # ---------------------------------------------------------
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'chicago-backend'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--command'
+      - './scripts/start_backend.sh'
+      # Reload env vars
+      - '--set-env-vars'
+      - 'DATA_DIR=/code/data/processed,RAW_DATA=/code/data/raw/active_licences.geojson'
+
+  # ---------------------------------------------------------
+  # 4 - Frontend Deployment
+  # ---------------------------------------------------------
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'chicago-frontend'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--command'
+      - './scripts/start_frontend.sh'
+      - '--port'
+      - '8501'
+      - '--env-vars-file'
+      - 'env.yaml'
+
+# Caching layers to speed up the build
+options:
+  logging: CLOUD_LOGGING_ONLY

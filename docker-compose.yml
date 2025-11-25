@@ -1,5 +1,5 @@
 services:
-  # Backend API
+  # Service 1: Backend API
   backend:
     build: .
     container_name: chicago_backend
@@ -14,11 +14,11 @@ services:
       - DATA_DIR=/code/data/processed
       - RAW_DATA=/code/data/raw/active_licences.geojson
 
-  # Service 2: The Frontend UI
+  # Service 2: Frontend UI
   frontend:
     build: .
     container_name: chicago_frontend
-    command: streamlit run frontend/Home.py --server.port 8501 --server.address 0.0.0.0
+    command: ./scripts/start_frontend.sh 
     volumes:
       - .:/code
     ports:

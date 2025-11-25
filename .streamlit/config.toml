@@ -1,0 +1,12 @@
+[theme]
+# Chicago Flag Palette
+primaryColor = "#41B6E6"       # Sky Blue (Buttons, Sliders, Active Inputs)
+backgroundColor = "#FFFFFF"    # Clean White (Main background)
+secondaryBackgroundColor = "#F0F2F6" # Light Grey (Sidebar background)
+textColor = "#333333"          # Dark Grey (Readability)
+font = "sans serif"       
+
+[server]
+headless = true
+address = "0.0.0.0"
+port = 8501
