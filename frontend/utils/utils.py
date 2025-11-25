@@ -8,17 +8,20 @@ import requests
 import streamlit as st
 import google.auth.transport.requests
 import google.oauth2.id_token
+import logging
 
 from shapely.geometry import shape, MultiPoint
 
 from utils.config import *
+
+logger = logging.getLogger('gunicorn.error')
 
 def get_id_token(url):
     try:
         auth_req = google.auth.transport.requests.Request()
         return google.oauth2.id_token.fetch_id_token(auth_req, url)
     except Exception as e:
-        print(f"⚠️ Could not fetch ID token: {e}")
+        logger.warning(f"Could not fetch ID token: {e}")
         return None
 
 # --- Caching Function ---
@@ -34,7 +37,7 @@ def get_api_data(
     if token:
         headers['Authorization'] = f'Bearer {token}'
     else:
-        print('Warning: Request sent without Auth token.')
+        logger.warning('Request sent without Auth token.')
         
     try:
         r = requests.get(

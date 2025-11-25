@@ -26,6 +26,7 @@ steps:
         - 'run'
         - 'deploy'
         - 'chicago-frontend'
+        - '--service-account chicago-frontend-sa@$PROJECT_ID.iam.gserviceaccount.com'
         - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
         - '--command=./scripts/start_frontend.sh'
         - '--region=$_REGION'
