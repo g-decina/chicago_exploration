@@ -18,6 +18,8 @@ steps:
         - '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
         - 'region'
         - '$_REGION'
+        - '--env-vars-file'
+        - 'env.yaml'
     
     # 4. Deploy frontend
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -30,6 +32,8 @@ steps:
         - '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
         - '--region'
         - '$_REGION'
+        - '--env-vars-file'
+        - 'env.yaml'
 
 substitutions:
   _REGION: us-central1
