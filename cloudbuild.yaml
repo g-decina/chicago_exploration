@@ -55,7 +55,7 @@ steps:
         - '--service-account=chicago-frontend-sa@$PROJECT_ID.iam.gserviceaccount.com'
         - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
         - '--command=python'
-        - '--args=-m,streamlit,run,app/Home.py,--server.port=8501,--server.address=0.0.0.0,--server.headless=true,--server.fileWatcherType=none'
+        - '--args=-m,streamlit,run,frontend/Home.py,--server.port=8501,--server.address=0.0.0.0,--server.headless=true,--server.fileWatcherType=none'
         - '--region=$_REGION'
         - '--port=8501'
         - '--env-vars-file=env.yaml'
