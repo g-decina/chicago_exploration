@@ -30,15 +30,14 @@ def get_api_data(
     endpoint,
     params=None
 ):
-    url = f'{BACKEND_URL}/{endpoint}'
-    
     headers = {}
-    token = get_id_token(url)    
+    token = get_id_token(BACKEND_URL)    
     if token:
         headers['Authorization'] = f'Bearer {token}'
     else:
         logger.warning('Request sent without Auth token.')
-        
+
+    url = f'{BACKEND_URL}/{endpoint}'
     try:
         r = requests.get(
             url, 
