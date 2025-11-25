@@ -33,6 +33,7 @@ steps:
         - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
         - '--command=./scripts/start_backend.sh'
         - '--region=$_REGION'
+        - '--port=8000'
         - '--env-vars-file=env.yaml'
     
     # 6. Deploy frontend
