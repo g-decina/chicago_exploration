@@ -67,7 +67,7 @@ def trigger_map():
 with st.sidebar:
     st.header('Filters')
     
-    activity_list = fetch_activity_codes()
+    activity_list = get_activity_codes()
     activity_labels = tuple(activity_list)
     
     selected_code=st.selectbox(
@@ -108,14 +108,11 @@ if st.session_state.get('trigger', False):
             st.session_state['trigger'] = False
             st.rerun()
         
-        geojson_data = get_api_data(
-            'geojson',
-            params={
-                'act_codes': selected_code,
-                'clustering': enable_clustering,
-                'eps': eps,
-                'min_samples': min_samples
-            }
+        geojson_data = get_geojson(
+            selected_code=selected_code,
+            enable_clustering=enable_clustering,
+            eps=eps,
+            min_samples=min_samples
         )
         
         if not geojson_data or not geojson_data.get('features'):

@@ -57,17 +57,15 @@ def get_api_data(
         return None
 
 @st.cache_data
-def fetch_activity_codes():
-    response = requests.get(f'{BACKEND_URL}/codes')
+def get_activity_codes():
+    response = get_api_data('codes')
     if response.status_code == 200:
         return response.json()
     else:
         st.error('Failed to load activity codes.')
         return {}
 
-
-
-def fetch_geojson(
+def get_geojson(
     act_codes, clustering=False, eps=0.02, min_samples=5
 ):
     params={
@@ -76,17 +74,17 @@ def fetch_geojson(
         'eps': eps,
         'min_samples': min_samples
     }
-    resp = requests.get(f'{BACKEND_URL}/geojson', params=params)
-    if resp.status_code==200:
+    response = get_api_data('geojson', params=params)
+    if response.status_code==200:
         try:
-            return resp.json()
+            return response.json()
         except Exception as e:
             st.error(f'Failed to parse GeoJSON: {e}')
             return None
-    elif resp.status_code == 204:
+    elif response.status_code == 204:
         return None
     else:
-        st.error(f'Backend error({resp.status_code}): {resp.text}')
+        st.error(f'Backend error({response.status_code}): {response.text}')
         return None
     
 def fetch_csv(naf_codes):
@@ -108,36 +106,6 @@ def get_bounds_from_geojson(geojson):
     center = [(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2]
     return center, 10
 
-def fetch_data_geojson(act_codes, clustering, eps, min_samples):
-    params = {
-        'act_codes': act_codes,
-        'clustering': clustering,
-        'eps': eps,
-        'min_samples': min_samples
-    }
-    try:
-        r = requests.get(f'{BACKEND_URL}/geojson', params=params)
-        r.raise_for_status()
-        
-        if r.status_code == 204:
-            return None
-        return r.json()
-    except requests.RequestException as e:
-        st.error(f'Error fetching data GeoJSON: {e}')
-        return None
-    except json.JSONDecodeError:
-        st.error(f'Failed to decode GeoJSON data from backend.')
-        return None
-
-def fetch_overlay_geojson(level):
-    try:
-        r = requests.get(f'{BACKEND_URL}/geojson/{level}')
-        r.raise_for_status()
-        return r.json()
-    except requests.RequestException as e:
-        st.error(f'Error fetching data GeoJSON: {e}')
-        return None
-    
 def get_cluster_colormap(geojson_data):
     """
     Generates a color dictionary for clusters.
