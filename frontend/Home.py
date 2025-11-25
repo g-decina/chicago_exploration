@@ -10,7 +10,7 @@ from utils.utils import *
 from utils.config import *
 
 st.set_page_config(
-        page_title='Mapping Chicago\'s Companies', 
+        page_title='Chicago Economic Atlas', 
         layout='wide',
         initial_sidebar_state='expanded'
         )
@@ -44,21 +44,18 @@ with col1:
 
 with col2:
     st.title("Chicago Commercial Atlas")
-    st.markdown("### *A Machine Learning-Powered Commercial Density Explorer*")
+    st.markdown("### *An AI-Powered Commercial Density Explorer*")
 
-st.title('Mapping Chicago\'s Companies')
-st.write(
-    '''
-    This application is designed to explore Chicago's economic geography.
-    The dynamic map allows you to explore freely down to street-level data.
-    ''')
-
-st.info(
-    '''
-    **How it works:** This tool uses **Transformers (SBERT)** to clean messy business license data 
-    and **Density Clustering (HDBSCAN)** to identify organic commercial districts in Chicago. \n
-    Select a category on the sidebar, then click 'Generate Map' to begin.
-    ''')
+if st.session_state.get('map') is None and not st.session_state.get('trigger'):
+    st.info(
+        '''
+        **Why this exists:** This application is designed to explore Chicago's economic geography.
+        The dynamic map allows you to explore freely down to street-level data.
+        
+        **How it works:** This tool uses **Transformers (SBERT)** to clean messy business license data 
+        and **Density Clustering (HDBSCAN)** to identify organic commercial districts in Chicago. \n
+        Select a category on the sidebar, then click 'Generate Map' to begin.
+        ''')
 
 # --- Caching Function ---
 @st.cache_data(ttl=5, show_spinner='Fetching data from API...')
@@ -107,7 +104,7 @@ with st.sidebar:
         disabled = not enable_clustering,
         help = 'Distance threshold to merge clusters: clusters that have a gap closer than the specified distance between them will be merged together. \n\nSet to 0 for pure density-based clustering.')
     eps = 1609.34 * miles # Distances are calculated in meters; see app/utils/clustering.py
-    min_samples = st.slider('Min. businesses per cluster', 1, 50, 10, disabled=not enable_clustering)
+    min_samples = st.slider('Min. businesses per cluster', 2, 50, 10, disabled=not enable_clustering)
     
     st.markdown('---')
     generate = st.sidebar.button('Generate Map', on_click=trigger_map)

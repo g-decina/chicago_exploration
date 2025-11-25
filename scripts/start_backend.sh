@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ ! -f 'data/processed/cluster_index.csv' ]; then
+if [ ! -f 'data/current/chicago_licenses_master.geojson' ]; then
     echo 'First run detected. Processing raw data...'
     python -m data.extraction
 else
