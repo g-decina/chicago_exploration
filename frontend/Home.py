@@ -57,20 +57,6 @@ if st.session_state.get('map') is None and not st.session_state.get('trigger'):
         Select a category on the sidebar, then click 'Generate Map' to begin.
         ''')
 
-# --- Caching Function ---
-@st.cache_data(ttl=5, show_spinner='Fetching data from API...')
-def get_api_data(
-    endpoint,
-    params=None
-):
-    try:
-        url = f'{BACKEND_URL}/{endpoint}'
-        r = requests.get(url, params=params, timeout=TIMEOUT)
-        return r.json()
-    except requests.RequestException as e:
-        st.error(f'Error API fetching {endpoint}: {e}')
-        return None
-
 # --- Sidebar ---
 if 'trigger' not in st.session_state:
     st.session_state['trigger'] = False

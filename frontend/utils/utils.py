@@ -3,10 +3,56 @@ import matplotlib.cm as cm
 import matplotlib.colors as mcolors
 import requests
 import streamlit as st
+import os
+import requests
+import streamlit as st
+import google.auth.transport.requests
+import google.oauth2.id_token
 
 from shapely.geometry import shape, MultiPoint
 
 from utils.config import *
+
+def get_id_token(url):
+    try:
+        auth_req = google.auth.transport.requests.Request()
+        return google.oauth2.id_token.fetch_id_token(auth_req, url)
+    except Exception as e:
+        print(f"⚠️ Could not fetch ID token: {e}")
+        return None
+
+# --- Caching Function ---
+@st.cache_data(ttl=5, show_spinner='Fetching data from API...')
+def get_api_data(
+    endpoint,
+    params=None
+):
+    url = f'{BACKEND_URL}/{endpoint}'
+    
+    headers = {}
+    token = get_id_token(url)    
+    if token:
+        headers['Authorization'] = f'Bearer {token}'
+    else:
+        print('Warning: Request sent without Auth token.')
+        
+    try:
+        r = requests.get(
+            url, 
+            params=params, 
+            headers=headers,
+            timeout=TIMEOUT
+        )
+        r.raise_for_status()
+        return r.json()
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 403:
+            st.error('Access Denied (403).')
+        else:
+            st.error(f'Error API fetching {endpoint}: {e}')
+    except requests.RequestException as e:
+        st.error(f'Error API fetching {endpoint}: {e}')
+        return None
 
 @st.cache_data
 def fetch_activity_codes():
@@ -16,6 +62,8 @@ def fetch_activity_codes():
     else:
         st.error('Failed to load activity codes.')
         return {}
+
+
 
 def fetch_geojson(
     act_codes, clustering=False, eps=0.02, min_samples=5
