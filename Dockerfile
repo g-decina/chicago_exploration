@@ -1,12 +1,24 @@
-FROM python:3.12-slim
+# 1. BUILD
+FROM python:3.12-slim as builder
 
 ENV PYTHONUNBUFFERED=1
 
+WORKDIR /install
+
+# Install dependencies in a separate dir
+COPY requirements.txt .
+RUN pip install --no-cache-dir --default-timeout=100 -r requirements.txt --target=/usr/local/lib/python3.12/site-packages
+
+# 2. RUNTIME IMAGE
+FROM python=3.12-slim
+
+ENV PYTHONUNBUFFERED=1
 WORKDIR /code
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir --default-timeout=100 -r requirements.txt
+# Copy install packages from step 1
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 
+# Copy source code
 COPY . .
 
 ENV PYTHONPATH=/code

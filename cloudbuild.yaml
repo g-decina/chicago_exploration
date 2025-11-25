@@ -1,13 +1,29 @@
 steps:
     # 1. Build the Docker image
     - name: 'gcr.io/cloud-builders/docker'
-      args: ['build', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA', '.']
-
-    # 2. Push to Artifact Registry
+      args: [
+        'build', 
+        '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA', 
+        '--cache-from', '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:latest',
+        '.'
+      ]
+      
+    # 2. Push to Artifact Reg
     - name: 'gcr.io/cloud-builders/docker'
       args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA']
     
-    # 3. Deploy backend
+    # 3. Tag the image as 'latest' for the next build's cache
+    - name: 'gcr.io/cloud-builders/docker'
+      args:
+        - 'tag'
+        - '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:$COMMIT_SHA'
+        - '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:latest'
+
+    # 4. Push the 'latest' image to Artifact Reg
+    - name: 'gcr.io/cloud-builders/docker'
+      args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/chicago-repo/chicago-app:latest']
+
+    # 5. Deploy backend
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       entrypoint: gcloud
       args:
@@ -19,7 +35,7 @@ steps:
         - '--region=$_REGION'
         - '--env-vars-file=env.yaml'
     
-    # 4. Deploy frontend
+    # 6. Deploy frontend
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       entrypoint: gcloud
       args:

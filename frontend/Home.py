@@ -10,16 +10,19 @@ from utils.utils import *
 from utils.config import *
 
 st.set_page_config(
-        page_title='Chicago Economic Atlas', 
+        page_title='Chicago Business Atlas', 
         layout='wide',
-        initial_sidebar_state='expanded'
+        initial_sidebar_state='expanded',
+        page_icon='🏙️'
         )
 
 st.markdown("""
         <style>
                 #MainMenu {visibility: hidden;}
                 .stDeployButton {display:none;}
-                footer {visibility: hidden;}
+                /* Hide the default Streamlit footer */
+                footer {visibility: hidden;} 
+                
                 /* Customize the sidebar title */
                 [data-testid="stSidebarNav"]::before {
                         content: "Chicago Explorer";
@@ -30,6 +33,34 @@ st.markdown("""
                         color: #41B6E6;
                         position: relative;
                         top: 10px;
+                }
+                
+                /* Portfolio Footer Styling */
+                .st-portfolio-footer {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    background-color: #f0f2f6; /* Light background */
+                    color: #0e1117;
+                    padding: 10px 20px;
+                    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                    font-size: 14px;
+                    z-index: 1000;
+                }
+                .st-portfolio-footer a {
+                    color: #41B6E6; /* Blue link color matching sidebar */
+                    text-decoration: none;
+                    margin: 0 10px;
+                    font-weight: 600;
+                }
+                .st-portfolio-footer a:hover {
+                    text-decoration: underline;
+                }
+                /* Ensure content doesn't get hidden by the footer */
+                .main {
+                    padding-bottom: 50px; 
                 }
         </style>
 """, unsafe_allow_html=True)
@@ -43,16 +74,16 @@ with col1:
     st.markdown("# ✶✶✶✶")
 
 with col2:
-    st.title("Chicago Commercial Atlas")
+    st.title("Chicago Business Atlas")
     st.markdown("### *An AI-Powered Commercial Density Explorer*")
 
 if st.session_state.get('map') is None and not st.session_state.get('trigger'):
     st.info(
         '''
-        **Why this exists:** This application is designed to explore Chicago's economic geography.
+        **Why?** This application is designed to explore Chicago's economic geography.
         The dynamic map allows you to explore freely down to street-level data.
         
-        **How it works:** This tool uses **Transformers (SBERT)** to clean messy business license data 
+        **How?** This tool uses **Transformers (SBERT)** to clean messy business license data 
         and **Density Clustering (HDBSCAN)** to identify organic commercial districts in Chicago. \n
         Select a category on the sidebar, then click 'Generate Map' to begin.
         ''')
@@ -232,3 +263,18 @@ if st.session_state['map']:
             width=1400,
             height=700
         )
+        
+st.markdown(
+    """
+    <div class="st-portfolio-footer">
+        <p>
+            <b>Guillaume Decina, 2025</b> <span style="margin-left: 5px; margin-right: 5px">·</span>
+            Looking for a Data Scientist/ML Engineer role! <span style="margin-left: 5px; margin-right: 5px">·</span>
+            Connect with the Developer:
+            <a href="https://www.linkedin.com/in/guillaume-decina-8648261b1/" target="_blank">LinkedIn</a>
+            <a href="http://github.com/g-decina" target="_blank">GitHub</a>
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
