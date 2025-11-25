@@ -65,43 +65,8 @@ st.markdown("""
         </style>
 """, unsafe_allow_html=True)
 
-col1, col2 = st.columns([1, 5])
-
-with col1:
-    # If you have a logo.png in your assets, uncomment this
-    # image = Image.open('assets/chicago_star.png') 
-    svg = """
-            <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-            <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-            <svg width="100%" height="100%" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
-                <rect x="0" y="0" width="300" height="300" style="fill:rgb(65,182,230);fill-opacity:0;stroke:rgb(65,182,230);stroke-width:25px;"/>
-                <g transform="matrix(1,0,0,1,57.7242,28.4399)">
-                    <text x="0px" y="88.981px" style="font-family:'Menlo-Regular', 'Menlo', monospace;font-size:116.667px;fill:rgb(65,182,230);">✶</text>
-                </g>
-                <g transform="matrix(1,0,0,1,172.344,73.8129)">
-                    <text x="0px" y="88.639px" style="font-family:'Menlo-Bold', 'Menlo', monospace;font-weight:700;font-size:116.667px;fill:rgb(65,182,230);">✶</text>
-                </g>
-                <g transform="matrix(0.0622484,0,0,0.0664484,206.709,83.4861)">
-                    <g transform="matrix(1,0,0,1,-533.333,-700)">
-                        <g transform="matrix(11.7083,0,0,11.7083,5.86081,172.527)">
-                            <path d="M45,0C25.463,0 9.625,15.838 9.625,35.375C9.625,44.097 13.703,50.708 18.029,58.236L45.051,102.303L71.97,58.235C75.867,50.991 80.374,44.096 80.374,35.374C80.375,15.838 64.537,0 45,0ZM45,48.705C36.965,48.705 30.452,42.192 30.452,34.157C30.452,26.122 36.965,19.609 45,19.609C53.035,19.609 59.548,26.122 59.548,34.157C59.548,42.192 53.035,48.705 45,48.705Z" style="fill:rgb(255,0,0);fill-rule:nonzero;"/>
-                        </g>
-                    </g>
-                </g>
-                <g transform="matrix(1,0,0,1,57.7242,133.46)">
-                    <text x="0px" y="88.981px" style="font-family:'Menlo-Regular', 'Menlo', monospace;font-size:116.667px;fill:rgb(65,182,230);">✶</text>
-                </g>
-                <g transform="matrix(1,0,0,1,172.344,176.267)">
-                    <text x="0px" y="88.981px" style="font-family:'Menlo-Regular', 'Menlo', monospace;font-size:116.667px;fill:rgb(65,182,230);">✶</text>
-                </g>
-            </svg>
-            """
-    st.markdown(svg, unsafe_allow_html=True)
-    st.space('medium')
-
-with col2:
-    st.title("Chicago Business Atlas")
-    st.markdown("### *An AI-Powered Commercial Density Explorer*")
+st.title("Chicago Business Atlas")
+st.markdown("### *An AI-Powered Commercial Density Explorer*")
 
 if st.session_state.get('map') is None and not st.session_state.get('trigger'):
     st.info(
